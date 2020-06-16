@@ -14,7 +14,6 @@
 
 #define PORT	 12000
 
-
 int main() { 
 	int sockfd, n;
 	socklen_t len;
