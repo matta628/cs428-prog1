@@ -35,13 +35,13 @@ int main(int argc, char ** argv) {
 	servaddr.sin_port = htons(PORT); // port number
 	
 	// Connect to the server socket
-	int con = connect(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
+	connect(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
 
 	// Set socket timeout time
 	struct timeval  timeout;
 	timeout.tv_sec = 1;
 	timeout.tv_usec = 0;
-	int set = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
 
 	// Write Message into Buffer
 	strcpy(buffer, "ping");
@@ -51,7 +51,7 @@ int main(int argc, char ** argv) {
 		clock_t ping = clock();
 
 		//Send packet to server
-		int sen = sendto(sockfd, (const char *)buffer, strlen(buffer), 
+		sendto(sockfd, (const char *)buffer, strlen(buffer), 
 			   MSG_CONFIRM, (const struct sockaddr *) &servaddr, sizeof(servaddr));
 		
 		//Receive the packet from server
