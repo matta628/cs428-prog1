@@ -33,19 +33,15 @@ int main(int argc, char ** argv) {
 	struct hostent * host = gethostbyname(argv[1]);
 	servaddr.sin_addr = *(struct in_addr*)(host->h_addr);
 	servaddr.sin_port = htons(PORT); // port number
-
-	std::cout << "fill successful\n";
 	
 	// Connect to the server socket
 	int con = connect(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
-	if (con != -1) std::cout << "connection successful\n";
 
 	// Set socket timeout time
 	struct timeval  timeout;
 	timeout.tv_sec = 1;
 	timeout.tv_usec = 0;
 	int set = setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval));
-	if (set != -1) std::cout << "set socket option successful\n";
 
 	// Write Message into Buffer
 	strcpy(buffer, "ping");
@@ -57,8 +53,6 @@ int main(int argc, char ** argv) {
 		//Send packet to server
 		int sen = sendto(sockfd, (const char *)buffer, strlen(buffer), 
 			   MSG_CONFIRM, (const struct sockaddr *) &servaddr, sizeof(servaddr));
-
-		if (sen != -1) std::cout << "sending packet successful\n";
 		
 		//Receive the packet from server
 		int rec = recvfrom(sockfd, (char *)buffer, sizeof(buffer), 
@@ -66,24 +60,14 @@ int main(int argc, char ** argv) {
 		
 		if (rec < 0){
 			//Print Error Message
-			printf("receiving packet failed :,(");
-			if (errno == EAGAIN) printf(" EAGAIN ");
-			if (errno == EWOULDBLOCK) printf(" EWOULDBLOCK ");
-			if (errno == EBADF) printf(" EBADF ");
-			if (errno == ECONNREFUSED) printf(" ECONNREFUSED ");
-			if (errno == EFAULT) printf(" EFAULT ");
-			if (errno == EINTR) printf(" EINTR ");
-			if (errno == EINVAL) printf(" EINVAL ");
-			printf("\n");
+			printf("Packet Lost\n");
 		}
 		else{
 			//Get end time
 			clock_t pong = clock();
 			//Print RTT Time
-			printf("receiving packet successful ");
-			printf("RTT: %fs\n", (double)(pong - ping) / CLOCKS_PER_SEC);
+			printf("RTT: %.3f ms\n", (double)(pong - ping) * 1000 / CLOCKS_PER_SEC);
 		}
-		printf("\n");
 	}
 	return 0; 
 }
